@@ -1,4 +1,4 @@
-# FreeRTOS_Demos
+# TM4C123G_Demos
 This peoject includes some demos are developing based on TM4C123G.
 
 ## Compile & Download
