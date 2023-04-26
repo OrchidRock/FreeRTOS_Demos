@@ -30,19 +30,16 @@
 /* Kernel includes. */
 #include "FreeRTOS.h"
 #include "task.h"
-#include "queue.h"
 #include "semphr.h"
 
 /* TI includes. */
-#include "driverlib/driverlib.h"
-#include "morsecode.h"
+#include "driverlib.h"
 
 /* Priorities at which the tasks are created. */
 #define mainQUEUE_RECEIVE_TASK_PRIORITY		( tskIDLE_PRIORITY + 2 )
 #define	mainQUEUE_SEND_TASK_PRIORITY		( tskIDLE_PRIORITY + 1 )
-#define	mainBUTTON_TASK_PRIORITY		    ( tskIDLE_PRIORITY + 1 )
 
-/* The rate at which data is sent to the queue.  The 200ms value is converted
+/* The rate at which data is sent to the queue.  The xxx ms value is converted
 to ticks using the portTICK_PERIOD_MS constant. */
 #define mainQUEUE_SEND_FREQUENCY_MS			( pdMS_TO_TICKS( 1000UL ) )
 
@@ -50,22 +47,11 @@ to ticks using the portTICK_PERIOD_MS constant. */
 will remove items as they are added, meaning the send task should always find
 the queue empty. */
 #define mainQUEUE_LENGTH					( 1 )
-#define mainDEBOUNCE_DELAY			        ( ( TickType_t ) 150 / portTICK_PERIOD_MS )
-#define mainNO_DELAY				        ( ( TickType_t ) 0 )
 
 /* Values passed to the two tasks just to check the task parameter
 functionality. */
 #define mainQUEUE_SEND_PARAMETER			( 0x1111UL )
 #define mainQUEUE_RECEIVE_PARAMETER			( 0x22UL )
-
-/* Demo board specifics. */
-#define mainLED_RED         2
-#define mainLED_GREEN       4
-#define mainLED_BLUE        8
-#define mainBAUD_RATE       ( 19200 )
-#define mainFIFO_SET        ( 0x10 )
-#define mainPUSH_BUTTON     0
-static uint8_t mainToggle_LED = mainLED_RED;
 
 /*-----------------------------------------------------------*/
 
@@ -74,7 +60,6 @@ static uint8_t mainToggle_LED = mainLED_RED;
  */
 static void prvQueueReceiveTask( void *pvParameters );
 static void prvQueueSendTask( void *pvParameters );
-static void prvButtonHandlerTask( void *pvParameters );
 
 /*
  * Called by main() to create the simply blinky style application if
@@ -82,40 +67,16 @@ static void prvButtonHandlerTask( void *pvParameters );
  */
 void main_blinky( void );
 
-void vUART0_ISR( void );
-void vGPIOF_ISR( void );
-
 /* The queue used by both tasks. */
 static QueueHandle_t xQueue = NULL;
-
-/* The semaphore used to wake the button handler task from within the GPIO
-interrupt handler. */
-SemaphoreHandle_t xButtonSemaphore = NULL;
-
-/* String that is transmitted on the UART. */
-static char message_morse[3] = {'s', 'o', 's'};
-
-static char *cMessage = "Task woken by button SW1 interrupt! --- ";
-static volatile char *pcNextChar;
-
-static const TickType_t xTickTockOn = pdMS_TO_TICKS( 100 );
-static const TickType_t xTickTockOff = pdMS_TO_TICKS( 100 );
-static const TickType_t xTickTockChar = pdMS_TO_TICKS( 100 * 3 );
-
-static const TickType_t xShortBlock = pdMS_TO_TICKS( 5000);
 
 /*-----------------------------------------------------------*/
 
 void main_blinky( void )
 {
-	
-    /* Create the semaphore used to wake the button handler task from the GPIO
-	ISR. */
-	xButtonSemaphore = xSemaphoreCreateBinary();
-	xSemaphoreTake( xButtonSemaphore, 0 );
 
-    /* Create the queue. */
-	xQueue = xQueueCreate( sizeof(message_morse), sizeof(char));
+	/* Create the queue. */
+	xQueue = xQueueCreate( mainQUEUE_LENGTH, sizeof( uint32_t ) );
 
 	if( xQueue != NULL )
 	{
@@ -129,7 +90,6 @@ void main_blinky( void )
 					NULL );									/* The task handle is not required, so NULL is passed. */
 
 		xTaskCreate( prvQueueSendTask, "TX", configMINIMAL_STACK_SIZE, ( void * ) mainQUEUE_SEND_PARAMETER, mainQUEUE_SEND_TASK_PRIORITY, NULL );
-
 
 		/* Start the tasks and timer running. */
 		vTaskStartScheduler();
@@ -147,14 +107,13 @@ void main_blinky( void )
 static void prvQueueSendTask( void *pvParameters )
 {
 TickType_t xNextWakeTime;
-//const unsigned long ulValueToSend = 100UL;
+const unsigned long ulValueToSend = 100UL;
 
 	/* Check the task parameter is as expected. */
 	configASSERT( ( ( unsigned long ) pvParameters ) == mainQUEUE_SEND_PARAMETER );
 
 	/* Initialise xNextWakeTime - this only needs to be done once. */
-	//xNextWakeTime = xTaskGetTickCount();
-    
+	xNextWakeTime = xTaskGetTickCount();
 
 	for( ;; )
 	{
@@ -162,23 +121,22 @@ TickType_t xNextWakeTime;
 		The block time is specified in ticks, the constant used converts ticks
 		to ms.  While in the Blocked state this task will not consume any CPU
 		time. */
-		//vTaskDelayUntil( &xNextWakeTime, mainQUEUE_SEND_FREQUENCY_MS );
-	    vTaskDelay( xShortBlock );
+		vTaskDelayUntil( &xNextWakeTime, mainQUEUE_SEND_FREQUENCY_MS );
 
 		/* Send to the queue - causing the queue receive task to unblock and
 		toggle the LED.  0 is used as the block time so the sending operation
 		will not block - it shouldn't need to block as the queue should always
 		be empty at this point in the code. */
-		xQueueSend( xQueue, message_morse, 0U );
+		xQueueSend( xQueue, &ulValueToSend, 0U );
 	}
 }
 /*-----------------------------------------------------------*/
 
 static void prvQueueReceiveTask( void *pvParameters )
 {
-    //unsigned long ulReceivedValue;
-    char msg[3] = {'\0'};
-    int i, j, k, cnt;
+unsigned long ulReceivedValue;
+static const TickType_t xShortBlock = pdMS_TO_TICKS( 50 );
+
 	/* Check the task parameter is as expected. */
 	configASSERT( ( ( unsigned long ) pvParameters ) == mainQUEUE_RECEIVE_PARAMETER );
 
@@ -187,77 +145,23 @@ static void prvQueueReceiveTask( void *pvParameters )
 		/* Wait until something arrives in the queue - this task will block
 		indefinitely provided INCLUDE_vTaskSuspend is set to 1 in
 		FreeRTOSConfig.h. */
-		xQueueReceive( xQueue, msg, portMAX_DELAY );
+		xQueueReceive( xQueue, &ulReceivedValue, portMAX_DELAY );
 
 		/*  To get here something must have been received from the queue, but
 		is it the expected value?  If it is, toggle the LED. */
-		for(i = 0; i < 3 &&  msg[i] != '\0'; i++)
+		if( ulReceivedValue == 100UL )
 		{
-            for(j = 0; j< 5 && MorseCode[msg[i]-'A'][j] != '\0'; j++){
-                if (MorseCode[msg[i]-'A'][j] == '.'){
-                    cnt = 1;   
-                }else{ // '_'
-                    cnt = 3; 
-                }
-                for (k = 0; k < cnt ; k++){
-                    GPIOPinWrite( GPIO_PORTF_BASE, mainToggle_LED,  mainToggle_LED);
-			        vTaskDelay( xTickTockOn );
-                    GPIOPinWrite( GPIO_PORTF_BASE, mainToggle_LED, 0 ); 
-                    vTaskDelay( xTickTockOn );
-                }
-                vTaskDelay(xTickTockOff);
-            }
-            
-            vTaskDelay(xTickTockChar);
+			/* Blip the LED for a short while so as not to use too much
+			power. */
+			//configTOGGLE_LED();
+            GPIOPinWrite( GPIO_PORTF_BASE, mainLED_RED, mainLED_RED );
+			vTaskDelay( xShortBlock );
+            GPIOPinWrite( GPIO_PORTF_BASE, mainLED_RED, 0 );
+			ulReceivedValue = 0U;
 		}
 	}
 }
-
 /*-----------------------------------------------------------*/
-void vGPIOF_ISR( void )
-{
-portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
-    
-    uint32_t s = GPIOIntStatus(GPIO_PORTF_BASE, true);
-	/* Clear the interrupt. */
-	GPIOIntClear(GPIO_PORTF_BASE, s);
-    
-	/* Wake the button handler task. */
-	//xSemaphoreGiveFromISR( xButtonSemaphore, &xHigherPriorityTaskWoken );
-    
-    if (mainToggle_LED == mainLED_BLUE)
-        mainToggle_LED = mainLED_RED;
-    else
-        mainToggle_LED = mainToggle_LED + 1;
-     
-	portEND_SWITCHING_ISR( xHigherPriorityTaskWoken );
-    
-}
-
-void vUART0_ISR( void )
-{
-unsigned long ulStatus;
-
-	/* What caused the interrupt. */
-	ulStatus = UARTIntStatus( UART0_BASE, pdTRUE );
-
-	/* Clear the interrupt. */
-	UARTIntClear( UART0_BASE, ulStatus );
-
-	/* Was a Tx interrupt pending? */
-	if( ulStatus & UART_INT_TX )
-	{
-		/* Send the next character in the string.  We are not using the FIFO. */
-		if( *pcNextChar != 0 )
-		{
-			if( !( HWREG( UART0_BASE + UART_O_FR ) & UART_FR_TXFF ) )
-			{
-				HWREG( UART0_BASE + UART_O_DR ) = *pcNextChar;
-			}
-			pcNextChar++;
-		}
-	}
-}
 
 void vPreSleepProcessing( uint32_t ulExpectedIdleTime )
 {

@@ -42,8 +42,7 @@ interface through a UART.
 
 */
 
-#define configCREATE_SIMPLE_TICKLESS_DEMO	1
-
+#define configCREATE_SIMPLE_TICKLESS_DEMO 1
 
 /*-----------------------------------------------------------
  * Application specific definitions.
@@ -172,6 +171,13 @@ pre-processing. */
 CLI commands. */
 #define configUSE_TRACE_FACILITY	1
 
+/* Demo board specifics. */
+#define mainLED_RED         2
+#define mainLED_GREEN       4
+#define mainLED_BLUE        8
+#define mainBAUD_RATE       ( 19200 )
+#define mainFIFO_SET        ( 0x10 )
+#define mainPUSH_BUTTON     0
 
 /* The #ifdef guards against the file being included from IAR assembly files. */
 #ifndef __IASMARM__
