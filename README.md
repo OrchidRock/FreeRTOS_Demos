@@ -1,5 +1,5 @@
 # FreeRTOS_Demos
-This peoject includes some demos are developing based on FreeRTOS+TM4C123G.
+This peoject includes some demos are developing based on TM4C123G.
 
 ## Compile & Download
 
@@ -9,3 +9,7 @@ This peoject includes some demos are developing based on FreeRTOS+TM4C123G.
 
 
 ### Blinky_Demo
+
+### FreeRTOS_Demos
+
+### RTOS_Demo
