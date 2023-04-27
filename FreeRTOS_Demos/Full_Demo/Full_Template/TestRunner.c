@@ -64,6 +64,7 @@
 #include "StreamBufferDemo.h"
 #include "StreamBufferInterrupt.h"
 #include "RegTests.h"
+#include "print.h"
 
 /**
  * Priorities at which the tasks are created.
@@ -99,10 +100,9 @@ static char *pcStatusMessage = "No errors";
 static void prvCheckTask( void *pvParameters );
 /*-----------------------------------------------------------*/
 
-extern void vPortUARTprintf( char* );
 void vPrintTaskInfo(TaskStatus_t *, char*);
 
-static char cTaskInfo[400] = {0};
+//static char cTaskInfo[400] = {0};
 TaskHandle_t xCheckTaskHandle;
 TaskStatus_t xCheckTaskDetails;
 
@@ -634,5 +634,12 @@ void vPrintTaskInfo( TaskStatus_t * pxTaskStatus, char* pcWriteBuffer)
     sprintf( pcWriteBuffer, "%s %ld \r\n",
                pxTaskStatus->pcTaskName,
                pxTaskStatus->ulRunTimeCounter);
+}
+
+void vPrintDisplayMessage(  const char* const * pcMessageToSend ) {
+    vTaskSuspendAll();
+    const char * pcMessage = *pcMessageToSend;
+    configPRINTF((const char*)pcMessage);
+    xTaskResumeAll(); 
 }
 /*-----------------------------------------------------------*/

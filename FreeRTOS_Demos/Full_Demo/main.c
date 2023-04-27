@@ -40,7 +40,7 @@
 #include "TestRunner.h"
 
 void prvSetupHardware( void );
-void vPortUARTprintf ( char* );
+void vPortUARTprintf ( const char* );
 
 int main ( void )
 {
@@ -84,9 +84,9 @@ void prvSetupHardware( void )
     //vPortUARTprintf("123456789poiuytrewwsdfggh\r\n");
 }
 
-void vPortUARTprintf( char* message )
+void vPortUARTprintf( const char* message )
 {
-    char * pcNextChar = message;
+    const char * pcNextChar = message;
     
 	while( *pcNextChar != '\0')
     {

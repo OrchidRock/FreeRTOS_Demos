@@ -189,6 +189,7 @@ uint32_t ulGetRunTimeCounterValue( void );
 #define configTICK_RATE_HZ						( ( TickType_t ) 1000 )
 
 #define configPRINTF( X )   vPortUARTprintf( X )
+#define USE_STDIO 1
 
 #define configSTART_TASK_NOTIFY_TESTS             0
 #define configSTART_TASK_NOTIFY_ARRAY_TESTS       0
@@ -196,8 +197,8 @@ uint32_t ulGetRunTimeCounterValue( void );
 #define configSTART_SEMAPHORE_TESTS               0
 #define configSTART_POLLED_QUEUE_TESTS            0
 #define configSTART_INTEGER_MATH_TESTS            0
-#define configSTART_GENERIC_QUEUE_TESTS           1
-#define configSTART_PEEK_QUEUE_TESTS              0
+#define configSTART_GENERIC_QUEUE_TESTS           0
+#define configSTART_PEEK_QUEUE_TESTS              1
 #define configSTART_MATH_TESTS                    0
 #define configSTART_RECURSIVE_MUTEX_TESTS         0
 #define configSTART_COUNTING_SEMAPHORE_TESTS      0

@@ -57,3 +57,5 @@ tags
 
 build/
 
+*.swp
+*/*/.swp

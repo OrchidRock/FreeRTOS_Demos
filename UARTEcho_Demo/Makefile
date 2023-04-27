@@ -30,26 +30,16 @@ LD = arm-none-eabi-ld
 SIZE = arm-none-eabi-size
 OBJCOPY = arm-none-eabi-objcopy
 MCU = TM4C123GH6PM
-BIN = FreeRTOS_Full_Demo.bin
+BIN = UARTEcho_Demo.bin
 
 BUILD_DIR := build
 
-FREERTOS_DIR_REL := ../
-FREERTOS_DIR := $(abspath $(FREERTOS_DIR_REL))
-KERNEL_PATH := $(FREERTOS_DIR)/Source
-PORT_PATH := $(KERNEL_PATH)/portable/GCC/ARM_CM4F
-#DEMO_PATH = ../Common/Minimal
-#FULL_DEMO = ./Full_Demo
-
-DRIVERLIB_PARENT_PATH := ../../
-DRIVERLIB_PATH := $(DRIVERLIB_PARENT_PATH)/driverlib
-
-UTILS_PATH := ../../utils
+DRIVERLIB_PATH := ../driverlib
 
 DEBUG = #-DDEBUG #-g 
 OPT = -Os
 WARNINGS = -Wall -Wunused -Wmissing-prototypes -Wmissing-declarations -Wstrict-prototypes -Wbad-function-cast -Wcast-align -Wsign-compare -Wshadow -Wpointer-arith
-INCLUDE = -I. -I./Full_Template -I./Minimal -I$(DRIVERLIB_PARENT_PATH) -I$(DRIVERLIB_PATH) -I$(KERNEL_PATH)/include -I$(PORT_PATH)
+INCLUDE = -I. -I../ -I$(DRIVERLIB_PATH)
 CFLAGS = -mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp $(OPT) $(DEBUG) -ffunction-sections -fdata-sections -MD -std=c99 $(WARNINGS) -pedantic $(INCLUDE) 
 CFLAGS += -DPART_$(MCU) -Dgcc -DTARGET_IS_BLIZZARD_RA1
 
@@ -63,41 +53,23 @@ DRIVERLIB_FILES :=  \
 $(DRIVERLIB_PATH)/sysctl.c \
 $(DRIVERLIB_PATH)/gpio.c \
 $(DRIVERLIB_PATH)/uart.c \
-
-# FreeRTOS source
-FREERTOS_FILES := \
-$(KERNEL_PATH)/tasks.c \
-$(KERNEL_PATH)/queue.c \
-$(KERNEL_PATH)/list.c \
-$(KERNEL_PATH)/timers.c \
-$(KERNEL_PATH)/portable/MemMang/heap_1.c \
-$(PORT_PATH)/port.c
-
+$(DRIVERLIB_PATH)/interrupt.c \
+$(DRIVERLIB_PATH)/systick.c
 
 DEMO_SOURCE_FILES := \
-printf-stdarg.c \
 main.c \
 startup_gcc.c \
-Full_Template/TestRunner.c \
-Minimal/semtest.c \
-Minimal/GenQTest.c \
-Minimal/QueueOverwrite.c \
-Minimal/QPeek.c
 
-VPATH := $(DRIVERLIB_PATH) $(KERNEL_PATH) $(KERNEL_PATH)/portable/MemMang/ $(PORT_PATH) ./Full_Template/ ./Minimal/ $(UTILS_PATH)
+VPATH := $(DRIVERLIB_PATH)
 
 # driverlib objs
 DRIVERLIB_OBJS := $(patsubst %.c,%.o,$(notdir $(DRIVERLIB_FILES)))
-
-# freertos objs
-FREERTOS_OBJS := $(patsubst %.c,%.o,$(notdir $(FREERTOS_FILES)))
 
 # demo objs
 DEMO_OBJS := $(DEMO_SOURCE_FILES:%.c=%.o)
 
 OBJS := \
 $(addprefix $(BUILD_DIR)/driverlib/, $(DRIVERLIB_OBJS)) \
-$(addprefix $(BUILD_DIR)/FreeRTOS/, $(FREERTOS_OBJS)) \
 $(addprefix $(BUILD_DIR)/, $(DEMO_OBJS))
 
 $(info $(OBJS))
@@ -123,7 +95,7 @@ ${BUILD_DIR}/driverlib/%.o : %.c Makefile
 	-mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-${BUILD_DIR}/FreeRTOS/%.o : %.c Makefile
+${BUILD_DIR}/freertos/%.o : %.c Makefile
 	-mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c $< -o $@
 

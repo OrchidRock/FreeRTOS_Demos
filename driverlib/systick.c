@@ -269,6 +269,18 @@ SysTickValueGet(void)
     return(HWREG(NVIC_ST_CURRENT));
 }
 
+
+void
+SysTickValueClear(void) {
+    HWREG(NVIC_ST_CURRENT) &= 0;
+}
+
+
+bool
+SysTickCountIsSet(void) {
+    return HWREG(NVIC_ST_CTRL) & NVIC_ST_CTRL_COUNT;
+}
+
 //*****************************************************************************
 //
 // Close the Doxygen group.

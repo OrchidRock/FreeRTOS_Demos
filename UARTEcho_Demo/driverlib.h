@@ -14,6 +14,7 @@
 #include "cpu.h"
 #include "rom_map.h"
 #include "rom.h"
+#include "uart.h"
 #include "systick.h"
 
 #include "inc/hw_adc.h"

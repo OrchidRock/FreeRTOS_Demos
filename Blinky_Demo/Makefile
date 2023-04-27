@@ -53,7 +53,8 @@ DRIVERLIB_FILES :=  \
 $(DRIVERLIB_PATH)/sysctl.c \
 $(DRIVERLIB_PATH)/gpio.c \
 $(DRIVERLIB_PATH)/uart.c \
-$(DRIVERLIB_PATH)/interrupt.c
+$(DRIVERLIB_PATH)/interrupt.c \
+$(DRIVERLIB_PATH)/systick.c
 
 DEMO_SOURCE_FILES := \
 main.c \

@@ -65,6 +65,8 @@ extern void SysTickIntDisable(void);
 extern void SysTickPeriodSet(uint32_t ui32Period);
 extern uint32_t SysTickPeriodGet(void);
 extern uint32_t SysTickValueGet(void);
+extern void SysTickValueClear(void);
+extern bool SysTickCountIsSet(void);
 
 //*****************************************************************************
 //
