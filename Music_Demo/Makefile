@@ -30,7 +30,7 @@ LD = arm-none-eabi-ld
 SIZE = arm-none-eabi-size
 OBJCOPY = arm-none-eabi-objcopy
 MCU = TM4C123GH6PM
-BIN = Blinky_Demo.bin
+BIN = Music_Demo.bin
 
 BUILD_DIR := build
 
@@ -53,11 +53,15 @@ DRIVERLIB_FILES :=  \
 $(DRIVERLIB_PATH)/sysctl.c \
 $(DRIVERLIB_PATH)/gpio.c \
 $(DRIVERLIB_PATH)/interrupt.c \
+$(DRIVERLIB_PATH)/timer.c \
+$(DRIVERLIB_PATH)/cpu.c \
 $(DRIVERLIB_PATH)/systick.c \
+$(DRIVERLIB_PATH)/pwm.c
 
 DEMO_SOURCE_FILES := \
-main.c \
+PWM_Module_main.c \
 startup_gcc.c \
+systick_wait.c \
 
 VPATH := $(DRIVERLIB_PATH)
 

@@ -40,7 +40,7 @@ int main()
     SysCtlPeripheralEnable( SYSCTL_PERIPH_UART1 );  
     while ( !SysCtlPeripheralReady( SYSCTL_PERIPH_UART1 )) {}
     SysCtlPeripheralEnable( SYSCTL_PERIPH_GPIOB );
-    while ( !SysCtlPeripheralReady( SYSCTL_PERIPH_GPIOB ));
+    while ( !SysCtlPeripheralReady( SYSCTL_PERIPH_GPIOB )) {};
 
     // Set GPIO  B0 And B1 as peripheral function.
     GPIOPinTypeUART( GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1 );

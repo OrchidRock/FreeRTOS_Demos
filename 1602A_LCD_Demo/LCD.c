@@ -15,13 +15,15 @@ void LCD_Init(void) {
     while (!SysCtlPeripheralReady( SYSCTL_PERIPH_GPIOA )) {}
     GPIOPinTypeGPIOOutput( GPIO_PORTA_BASE, LCD_RS_PIN | LCD_E_PIN );
     GPIOPadConfigSet( GPIO_PORTA_BASE, LCD_RS_PIN | LCD_E_PIN, GPIO_STRENGTH_8MA, GPIO_PIN_TYPE_STD);
+    // GPIOPinTypeLCD(GPIO_PORTB_BASE, LCD_RS_PIN | LCD_E_PIN);
 
     // GPIO Port B.
     SysCtlPeripheralEnable( SYSCTL_PERIPH_GPIOB );
     while (!SysCtlPeripheralReady( SYSCTL_PERIPH_GPIOB )) {}
     GPIOPinTypeGPIOOutput( GPIO_PORTB_BASE, LCD_DATA_PIN);
     GPIOPadConfigSet( GPIO_PORTB_BASE, LCD_DATA_PIN, GPIO_STRENGTH_8MA, GPIO_PIN_TYPE_STD);
-    
+    // GPIOPinTypeLCD(GPIO_PORTB_BASE, LCD_DATA_PIN);
+
     GPIOPinWrite( GPIO_PORTA_BASE, LCD_E_PIN | LCD_RS_PIN, 0);
     systick_wait_ms(15);
 

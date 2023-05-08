@@ -15,7 +15,8 @@
 #include "rom_map.h"
 #include "rom.h"
 #include "systick.h"
-#include "interrupt.h"
+#include "timer.h"
+#include "pwm.h"
 
 #include "inc/hw_adc.h"
 #include "inc/hw_aes.h"
