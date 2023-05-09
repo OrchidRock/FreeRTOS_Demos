@@ -30,16 +30,17 @@ LD = arm-none-eabi-ld
 SIZE = arm-none-eabi-size
 OBJCOPY = arm-none-eabi-objcopy
 MCU = TM4C123GH6PM
-BIN = UARTEcho_Demo.bin
+BIN = SSI_Demo.bin
 
 BUILD_DIR := build
 
 DRIVERLIB_PATH := ../driverlib
+UTILS_PATH := ../utils
 
 DEBUG = #-DDEBUG #-g 
 OPT = -Os
 WARNINGS = -Wall -Wunused -Wmissing-prototypes -Wmissing-declarations -Wstrict-prototypes -Wbad-function-cast -Wcast-align -Wsign-compare -Wshadow -Wpointer-arith
-INCLUDE = -I. -I../ -I$(DRIVERLIB_PATH)
+INCLUDE = -I. -I../ -I$(DRIVERLIB_PATH) -I$(UTILS_PATH)
 CFLAGS = -mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp $(OPT) $(DEBUG) -ffunction-sections -fdata-sections -MD -std=c99 $(WARNINGS) -pedantic $(INCLUDE) 
 CFLAGS += -DPART_$(MCU) -Dgcc -DTARGET_IS_BLIZZARD_RA1
 
@@ -52,16 +53,17 @@ LIBC = ${shell ${CC} -mthumb -march=armv6t2 -print-file-name=libc.a}
 DRIVERLIB_FILES :=  \
 $(DRIVERLIB_PATH)/sysctl.c \
 $(DRIVERLIB_PATH)/gpio.c \
-$(DRIVERLIB_PATH)/uart.c \
+$(DRIVERLIB_PATH)/ssi.c \
 $(DRIVERLIB_PATH)/interrupt.c \
-$(DRIVERLIB_PATH)/systick.c \
-$(DRIVERLIB_PATH)/cpu.c
+$(DRIVERLIB_PATH)/uart.c \
+$(DRIVERLIB_PATH)/cpu.c \
 
 DEMO_SOURCE_FILES := \
-interrupt_main.c \
+ssi_main.c \
 startup_gcc.c \
+uartstdio.c \
 
-VPATH := $(DRIVERLIB_PATH)
+VPATH := $(DRIVERLIB_PATH) $(UTILS_PATH)
 
 # driverlib objs
 DRIVERLIB_OBJS := $(patsubst %.c,%.o,$(notdir $(DRIVERLIB_FILES)))
