@@ -27,8 +27,8 @@ void InitConsole(void) {
 
 int main()
 {
-    uint32_t pui32DataTx[NUMBER_SSI_DATA];
-    uint32_t pui32DataRx[NUMBER_SSI_DATA];
+    uint32_t pui32DataTx[NUMBER_SSI_DATA] = {0};
+    uint32_t pui32DataRx[NUMBER_SSI_DATA] = {0};
     uint32_t ui32Index;
 
     // 50M HZ
@@ -81,13 +81,24 @@ int main()
     
     while(SSIBusy(SSI0_BASE)) {}
     
+    UARTprintf("\nSSI0 Receive:  ");
+    for (ui32Index = 0; ui32Index < NUMBER_SSI_DATA; ui32Index++) {
+        SSIDataGet(SSI0_BASE, &pui32DataRx[ui32Index]);
+        pui32DataRx[ui32Index] &= 0x00FF;
+        UARTprintf("'%c' ", pui32DataRx[ui32Index]);
+    } 
+    
+    pui32DataRx[0] = 0;
+    pui32DataRx[1] = 0;
+    pui32DataRx[2] = 0;
+
     UARTprintf("\nSSI2 Receive:  ");
     for (ui32Index = 0; ui32Index < NUMBER_SSI_DATA; ui32Index++) {
         SSIDataGet(SSI2_BASE, &pui32DataRx[ui32Index]);
         pui32DataRx[ui32Index] &= 0x00FF;
         UARTprintf("'%c' ", pui32DataRx[ui32Index]);
     } 
-    
+     
     UARTprintf("\n\nDone.\n");
 
     for (;;) {
