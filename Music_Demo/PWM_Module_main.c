@@ -34,7 +34,7 @@ int main()
     
     PWMGenConfigure(PWM0_BASE, PWM_GEN_0, PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC); 
     PWMOutputState(PWM0_BASE, PWM_OUT_0_BIT, true); 
-
+    
     clock_hz = ROM_SysCtlClockGet();
     
     // SysTick

@@ -1,3 +1,4 @@
+#include <stdint.h>
 
 #define D0 -1
 #define D1 262
@@ -24,7 +25,7 @@
 #define H6 1755
 #define H7 1971
 
-float tune[] = {
+static uint32_t tune[] = {
 D6,M3,M6,M3,
 D4,M1,M4,M1,
 D5,M2,M5,M2,
@@ -66,7 +67,7 @@ M1
 };
 
 
-float durt[] = {
+static float durt[] = {
 0.5,0.5,0.5,0.5,
 0.5,0.5,0.5,0.5,
 0.5,0.5,0.5,0.5,

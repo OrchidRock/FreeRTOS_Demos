@@ -17,6 +17,7 @@
 #include "systick.h"
 #include "timer.h"
 #include "pwm.h"
+#include "interrupt.h"
 
 #include "inc/hw_adc.h"
 #include "inc/hw_aes.h"
