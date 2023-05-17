@@ -65,6 +65,8 @@ extern unsigned char UARTgetc(void);
 extern void UARTprintf(const char *pcString, ...);
 extern void UARTvprintf(const char *pcString, va_list vaArgP);
 extern int UARTwrite(const char *pcBuf, uint32_t ui32Len);
+extern void UARToutChar(char c);
+extern void UARToutCharNonBlock(char c);
 #ifdef UART_BUFFERED
 extern int UARTPeek(unsigned char ucChar);
 extern void UARTFlushTx(bool bDiscard);

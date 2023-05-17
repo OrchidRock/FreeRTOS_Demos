@@ -544,6 +544,14 @@ UARTwrite(const char *pcBuf, uint32_t ui32Len)
 #endif
 }
 
+void UARToutChar(char c) {
+    MAP_UARTCharPut(g_ui32Base, c);
+}
+
+void UARToutCharNonBlock(char c) {
+    MAP_UARTCharPutNonBlocking(g_ui32Base, c);
+}
+
 //*****************************************************************************
 //
 //! A simple UART based get string function, with some line processing.
