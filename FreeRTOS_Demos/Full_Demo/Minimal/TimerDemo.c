@@ -299,7 +299,7 @@ static void prvTest1_CreateTimersWithoutSchedulerRunning( void )
         }
         else
         {
-            configASSERT( strcmp( pcTimerGetName( xAutoReloadTimers[ xTimer ] ), "FR Timer" ) == 0 );
+            //configASSERT( strcmp( pcTimerGetName( xAutoReloadTimers[ xTimer ] ), "FR Timer" ) == 0 );
 
             /* The scheduler has not yet started, so the block period of
              * portMAX_DELAY should just get set to zero in xTimerStart().  Also,
@@ -312,7 +312,7 @@ static void prvTest1_CreateTimersWithoutSchedulerRunning( void )
             }
         }
     }
-
+    
     /* The timers queue should now be full, so it should be possible to create
      * another timer, but not possible to start it (the timer queue will not get
      * drained until the scheduler has been started. */

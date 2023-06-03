@@ -36,6 +36,7 @@
 #include "semphr.h"
 
 #include "TestRunner.h"
+#include "uartstdio.h"
 
 /* Various test includes. */
 #include "BlockQ.h"
@@ -300,6 +301,10 @@ void vStartTests( void )
 		}
 		#endif /* configSTART_DELETE_SELF_TESTS */
 	}
+    
+    size_t pxHeapSize = xPortGetFreeHeapSize();
+
+    UARTprintf("FreeHeapSize: %d\r\n", pxHeapSize);
 
 	vTaskStartScheduler();
 }

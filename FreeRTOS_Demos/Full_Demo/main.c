@@ -48,7 +48,7 @@ int main ( void )
     prvSetupHardware();
     
     vStartTests();
-
+    
     for( ; ; ) {
            
     }
@@ -79,8 +79,9 @@ void prvSetupHardware( void )
     GPIOPinConfigure( GPIO_PA1_U0TX);
 	
     /* Configure the UART for 8-N-1 operation. */
-	UARTConfigSetExpClk( UART0_BASE, SysCtlClockGet(), 115200, UART_CONFIG_WLEN_8 | UART_CONFIG_PAR_NONE | UART_CONFIG_STOP_ONE );
-
+	//UARTConfigSetExpClk( UART0_BASE, SysCtlClockGet(), 115200, UART_CONFIG_WLEN_8 | UART_CONFIG_PAR_NONE | UART_CONFIG_STOP_ONE );
+    UARTStdioConfig(0, 115200, SysCtlClockGet());
+    //
     //vPortUARTprintf("123456789poiuytrewwsdfggh\r\n");
 }
 

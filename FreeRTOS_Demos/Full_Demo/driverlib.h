@@ -15,6 +15,8 @@
 #include "cpu.h"
 #include "rom_map.h"
 #include "rom.h"
+#include "timer.h"
+#include "interrupt.h"
 
 #include "inc/hw_adc.h"
 #include "inc/hw_aes.h"

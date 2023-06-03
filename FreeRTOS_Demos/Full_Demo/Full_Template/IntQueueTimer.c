@@ -33,7 +33,7 @@
 #include "IntQueueTimer.h"
 #include "IntQueue.h"
 
-#include "driverlib/driverlib.h"
+#include "driverlib.h"
 
 #define tmrTIMER_0_FREQUENCY     ( 2000UL )
 

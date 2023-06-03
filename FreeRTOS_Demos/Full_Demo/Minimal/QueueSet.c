@@ -227,7 +227,7 @@
 /*-----------------------------------------------------------*/
 
     BaseType_t xAreQueueSetTasksStillRunning( void )
-    {
+    {   
         static uint32_t ulLastCycleCounter, ulLastISRTxValue = 0;
         static uint32_t ulLastQueueUsedCounter[ queuesetNUM_QUEUES_IN_SET ] = { 0 };
         BaseType_t xReturn = pdPASS, x;
@@ -389,7 +389,7 @@
         /* Create the queues and add them to the queue set before resuming the Tx
          * task. */
         prvSetupTest();
-
+        
         for( ; ; )
         {
             /* For test coverage reasons, the block time is dependent on the
@@ -632,34 +632,35 @@
     static void prvTestQueueOverwriteWithQueueSet( void )
     {
         uint32_t ulValueToSend = 0, ulValueReceived = 0;
-        QueueHandle_t xQueueHandle = NULL, xReceivedHandle = NULL;
+        QueueHandle_t pxQueueHandle = NULL, xReceivedHandle = NULL;
         const UBaseType_t xLengthOfOne = ( UBaseType_t ) 1;
 
         /* Create a queue that has a length of one - a requirement in order to call
          * xQueueOverwrite.  This will get deleted again when this test completes. */
-        xQueueHandle = xQueueCreate( xLengthOfOne, sizeof( uint32_t ) );
-        configASSERT( xQueueHandle );
+        pxQueueHandle = xQueueCreate( xLengthOfOne, sizeof( uint32_t ) );
+        configASSERT( pxQueueHandle );
 
-        if( xQueueHandle != NULL )
+        if( pxQueueHandle != NULL )
         {
-            xQueueAddToSet( xQueueHandle, xQueueSet );
+            xQueueAddToSet( pxQueueHandle, xQueueSet );
 
             /* Add an item to the queue then ensure the queue set correctly
              * indicates that one item is available, and that item is indeed the
              * queue written to. */
-            xQueueOverwrite( xQueueHandle, ( void * ) &ulValueToSend );
+            xQueueOverwrite( pxQueueHandle, ( void * ) &ulValueToSend );
 
             if( uxQueueMessagesWaiting( xQueueSet ) != ( UBaseType_t ) 1 )
             {
                 /* Expected one item in the queue set. */
                 xQueueSetTasksStatus = pdFAIL;
             }
+            
 
             xQueuePeek( xQueueSet, &xReceivedHandle, queuesetDONT_BLOCK );
 
-            if( xReceivedHandle != xQueueHandle )
+            if( xReceivedHandle != pxQueueHandle )
             {
-                /* Wrote to xQueueHandle so expected xQueueHandle to be the handle
+                /* Wrote to pxQueueHandle so expected pxQueueHandle to be the handle
                  * held in the queue set. */
                 xQueueSetTasksStatus = pdFAIL;
             }
@@ -668,7 +669,8 @@
              * doesn't change as the number of items in the queues within the set have
              * not changed. */
             ulValueToSend++;
-            xQueueOverwrite( xQueueHandle, ( void * ) &ulValueToSend );
+            xQueueOverwrite( pxQueueHandle, ( void * ) &ulValueToSend );
+            
 
             if( uxQueueMessagesWaiting( xQueueSet ) != ( UBaseType_t ) 1 )
             {
@@ -678,16 +680,16 @@
 
             xReceivedHandle = xQueueSelectFromSet( xQueueSet, queuesetDONT_BLOCK );
 
-            if( xReceivedHandle != xQueueHandle )
+            if( xReceivedHandle != pxQueueHandle )
             {
-                /* Wrote to xQueueHandle so expected xQueueHandle to be the handle
+                /* Wrote to pxQueueHandle so expected pxQueueHandle to be the handle
                  * held in the queue set. */
                 xQueueSetTasksStatus = pdFAIL;
             }
-
+            
             /* Also ensure the value received from the queue is the overwritten
              * value, not the value originally written. */
-            xQueueReceive( xQueueHandle, &ulValueReceived, queuesetDONT_BLOCK );
+            xQueueReceive( pxQueueHandle, &ulValueReceived, queuesetDONT_BLOCK );
 
             if( ulValueReceived != ulValueToSend )
             {
@@ -709,8 +711,8 @@
             }
 
             /* Clean up. */
-            xQueueRemoveFromSet( xQueueHandle, xQueueSet );
-            vQueueDelete( xQueueHandle );
+            xQueueRemoveFromSet( pxQueueHandle, xQueueSet );
+            vQueueDelete( pxQueueHandle );
         }
     }
 /*-----------------------------------------------------------*/
